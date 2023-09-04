@@ -44,28 +44,25 @@ int main(int argc, char *argv[])
     Graphics::Shader fragmentShader("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\test.frag", GL_FRAGMENT_SHADER);
     Graphics::ShaderProgram prog({vertexShader, fragmentShader});
 
-    float vertices[] = {
-        0.5f, 0.5f, 0.0f,   // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
+    const std::vector<glm::vec3> vertices = {
+        {0.5f, 0.5f, 0.0f},   // top right
+        {0.5f, -0.5f, 0.0f},  // bottom right
+        {-0.5f, -0.5f, 0.0f}, // bottom left
+        {-0.5f, 0.5f, 0.0f},  // top left
     };
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+    const std::vector<unsigned int> indices = {
+        0,
+        1,
+        3, // 1st triangle
+        1,
+        2,
+        3, // 2nd triangle
     };
-
-    Graphics::VAO vao;
-    Graphics::Buffer vbo, ebo;
-    vbo.addData(sizeof(vertices), vertices, GL_STATIC_DRAW);
-    ebo.addData(sizeof(indices), indices, GL_STATIC_DRAW);
-    vao
-        .attachVBO(0, vbo.id, 0, 3 * sizeof(float))
-        .attachEBO(ebo.id)
-        .addVertAttr(0, 0, 3, GL_FLOAT, GL_FALSE, 0);
+    Graphics::TriangleMesh mesh(vertices, indices);
+    mesh.setVertPosLocation(0);
 
     // uncomment this call to draw in wireframe polygons.
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     while (!glfwWindowShouldClose(window))
@@ -74,8 +71,7 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         prog.use();
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        mesh.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -26,20 +26,18 @@ vec3 mapCubePointToSphere(const vec3 &p)
                                 });
 }
 
+static_assert(sizeof(glm::vec3) == sizeof(float) * 3, "glm::vec3 is not the same size as float[3]");
 namespace Graphics
 {
-    TriangleMesh::TriangleMesh(std::vector<glm::vec3> vertices, std::vector<unsigned int> triangles)
-        : vertices{std::move(vertices)}, triangles{std::move(triangles)} { initVAO(); }
-    TriangleMesh::TriangleMesh(std::vector<glm::vec3> vertices, std::vector<unsigned int> triangles, std::vector<glm::vec3> normals, std::vector<glm::vec2> texCoords)
-        : vertices{std::move(vertices)}, triangles{std::move(triangles)}, normals{std::move(normals)}, texCoords{std::move(texCoords)} { initVAO(); }
-    void TriangleMesh::initVAO() const
+    TriangleMesh::TriangleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int> &triangleIndices, const std::vector<glm::vec3> &normals, const std::vector<glm::vec2> &texCoords)
+        : vertices{std::move(vertices)}, triangleIndices{std::move(triangleIndices)}, normals{std::move(normals)}, texCoords{std::move(texCoords)}
     {
-        if (sizeof(glm::vec3) != sizeof(float) * 3)
+        if (triangleIndices.size() % 3 != 0)
         {
-            throw std::runtime_error("glm::vec3 is not the same size as float[3]");
+            throw std::runtime_error("triangleIndices.size() is not a multiple of 3");
         }
         vbo.addData(vertices.size() * sizeof(glm::vec3), vertices.data(), gl::GL_STATIC_DRAW);
-        ebo.addData(triangles.size() * sizeof(unsigned int), triangles.data(), gl::GL_STATIC_DRAW);
+        ebo.addData(triangleIndices.size() * sizeof(unsigned int), triangleIndices.data(), gl::GL_STATIC_DRAW);
         vao
             .attachVBO(0, vbo.id, 0, sizeof(glm::vec3))
             .attachEBO(ebo.id);
@@ -47,12 +45,23 @@ namespace Graphics
         {
             std::cout << v.x << " " << v.y << " " << v.z << "\n";
         }
-        for (const auto &t : triangles)
+        for (const auto &t : triangleIndices)
         {
             std::cout << t << " ";
         }
         std::cout << std::endl;
     }
+    void TriangleMesh::setVertPosLocation(unsigned int location) const
+    {
+        vao.addVertAttr(location, 0, 3, gl::GL_FLOAT, gl::GL_FALSE, 0);
+    }
+    void TriangleMesh::draw() const
+    {
+        vao.bind();
+        gl::glDrawElements(gl::GL_TRIANGLES, triangleIndices.size(), gl::GL_UNSIGNED_INT, 0);
+    }
+
+    //------------------------------------------------------------------------------------
 
     std::array<TriangleMesh, 6> generateFaces(unsigned int resolution)
     {

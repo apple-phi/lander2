@@ -10,15 +10,15 @@ namespace Graphics
     struct TriangleMesh
     {
         std::vector<glm::vec3> vertices;
-        std::vector<unsigned int> triangles;
+        std::vector<unsigned int> triangleIndices;
         std::vector<glm::vec3> normals;
         std::vector<glm::vec2> texCoords;
 
         VAO vao;
         Buffer vbo, ebo;
-        TriangleMesh(std::vector<glm::vec3>, std::vector<unsigned int> triangles);
-        TriangleMesh(std::vector<glm::vec3>, std::vector<unsigned int> triangles, std::vector<glm::vec3> normals, std::vector<glm::vec2> texCoords);
-        void initVAO() const;
+        TriangleMesh(const std::vector<glm::vec3> &vertices, const std::vector<unsigned int> &trianglesIndices, const std::vector<glm::vec3> &normals = {}, const std::vector<glm::vec2> &texCoords = {});
+        void setVertPosLocation(unsigned int location) const;
+        void draw() const;
     };
     std::array<TriangleMesh, 6> generateFaces(unsigned int resolution);
     TriangleMesh makeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution);
