@@ -41,15 +41,6 @@ namespace Graphics
         vao
             .attachVBO(0, vbo.id, 0, sizeof(glm::vec3))
             .attachEBO(ebo.id);
-        for (const auto &v : vertices)
-        {
-            std::cout << v.x << " " << v.y << " " << v.z << "\n";
-        }
-        for (const auto &t : triangleIndices)
-        {
-            std::cout << t << " ";
-        }
-        std::cout << std::endl;
     }
     void TriangleMesh::setVertPosLocation(unsigned int location) const
     {
@@ -87,14 +78,13 @@ namespace Graphics
             for (unsigned int j = 0; j < resolution; j++)
             {
                 const size_t vertIndex = i + j * resolution;
-                const glm::vec2 t = {i / (double)resolution, j / (double)resolution};
+                const glm::vec2 t = glm::vec2(i, j) / (resolution - 1.0f);
                 const glm::vec3 p = normal + tangent * 2.0f * (t.x - 0.5f) + bitangent * 2.0f * (t.y - 0.5f);
-                vertices[vertIndex] = p;
+                vertices[vertIndex] = mapCubePointToSphere(p);
                 normals[vertIndex] = glm::normalize(p);
                 texCoords[vertIndex] = {i / ((double)resolution - 1), j / ((double)resolution - 1)};
                 if (i < resolution - 1 && j < resolution - 1)
                 {
-                    ;
                     triangles[triIndex++] = vertIndex;
                     triangles[triIndex++] = vertIndex + resolution + 1;
                     triangles[triIndex++] = vertIndex + resolution;

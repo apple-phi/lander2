@@ -9,6 +9,7 @@
 #include "graphics/shader.h"
 #include "graphics/buffer.h"
 #include "graphics/mesh.h"
+#include "graphics/helper.h"
 
 using namespace gl;
 
@@ -27,7 +28,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, (int)GL_TRUE);
 
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LanderApp", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -40,38 +41,40 @@ int main(int argc, char *argv[])
     glbinding::aux::enableGetErrorCallback();
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
-    Graphics::Shader vertexShader("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\test.vert", GL_VERTEX_SHADER);
-    Graphics::Shader fragmentShader("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\test.frag", GL_FRAGMENT_SHADER);
-    Graphics::ShaderProgram prog({vertexShader, fragmentShader});
+    Graphics::Shader vertexShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.vert", GL_VERTEX_SHADER);
+    Graphics::Shader fragmentShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.frag", GL_FRAGMENT_SHADER);
+    Graphics::ShaderProgram prog2({vertexShader2, fragmentShader2});
 
-    const std::vector<glm::vec3> vertices = {
-        {0.5f, 0.5f, 0.0f},   // top right
-        {0.5f, -0.5f, 0.0f},  // bottom right
-        {-0.5f, -0.5f, 0.0f}, // bottom left
-        {-0.5f, 0.5f, 0.0f},  // top left
-    };
-    const std::vector<unsigned int> indices = {
-        0,
-        1,
-        3, // 1st triangle
-        1,
-        2,
-        3, // 2nd triangle
-    };
-    Graphics::TriangleMesh mesh(vertices, indices);
-    mesh.setVertPosLocation(0);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 View = glm::lookAt(
+        glm::vec3(3, 3, -3), // Camera is at (4,3,-3), in World Space
+        glm::vec3(0, 0, 0),  // and looks at the origin
+        glm::vec3(0, 1, 0)   // Head is up (set to 0,-1,0 to look upside-down)
+    );
+    glm::mat4 Model = glm::mat4(1.0);
+    // Our ModelViewProjection : multiplication of our 3 matrices
+    glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-    // uncomment this call to draw in wireframe polygons.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    const auto meshes = Graphics::generateFaces(10);
+    for (const auto &m : meshes)
+    {
+        m.setVertPosLocation(0);
+    }
+
+    Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.06f, 0.01f, 0.3f, 1.0f);
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        prog.use();
-        mesh.draw();
+        prog2.use();
+        prog2.setUniformMat4("MVP", &MVP[0][0]);
+        for (const auto &m : meshes)
+        {
+            m.draw();
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
