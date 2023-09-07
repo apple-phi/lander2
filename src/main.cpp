@@ -10,6 +10,7 @@
 #include "graphics/buffer.h"
 #include "graphics/mesh.h"
 #include "graphics/helper.h"
+#include "graphics/texture.h"
 
 using namespace gl;
 
@@ -55,13 +56,16 @@ int main(int argc, char *argv[])
     // Our ModelViewProjection : multiplication of our 3 matrices
     glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-    const auto meshes = Graphics::generateFaces(10);
+    const auto &meshes = Graphics::generateFaces(20);
     for (const auto &m : meshes)
     {
         m.setVertPosLocation(0);
+        m.setTexCoordLocation(1);
     }
 
-    Graphics::Helper::useWireframe();
+    auto colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_color.jpg", 10);
+
+    // Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.06f, 0.01f, 0.3f, 1.0f);
     while (!glfwWindowShouldClose(window))
@@ -71,6 +75,7 @@ int main(int argc, char *argv[])
 
         prog2.use();
         prog2.setUniformMat4("MVP", &MVP[0][0]);
+        colorMap.bind(0);
         for (const auto &m : meshes)
         {
             m.draw();

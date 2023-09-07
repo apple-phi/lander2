@@ -29,6 +29,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 message(STATUS "Found GLM at: " ${glm_SOURCE_DIR})
 
+# stb
+# include(ExternalProject)
+FetchContent_Declare(
+  stb
+  URL https://github.com/nothings/stb/archive/refs/heads/master.zip
+)
+FetchContent_MakeAvailable(stb)
+message(STATUS "Found STB at: " ${stb_SOURCE_DIR})
+include_directories(${stb_SOURCE_DIR})
+
+
 # Subdirs
 add_subdirectory(src)
 
