@@ -97,7 +97,6 @@ namespace Graphics
         glm::vec3 bitangent = glm::cross(normal, tangent);
         std::vector<VertexData> vertices(resolution * resolution);
         std::vector<unsigned int> triangleIndices((resolution - 1) * (resolution - 1) * 6);
-        size_t triIndex = 0;
         for (unsigned int i = 0; i < resolution; i++)
         {
             for (unsigned int j = 0; j < resolution; j++)
@@ -109,12 +108,13 @@ namespace Graphics
                 vertices[vertIndex] = {.pos = spherePoint, .texCoord = mapUnitSpherePointToUV(spherePoint)};
                 if (i < resolution - 1 && j < resolution - 1)
                 {
+                    size_t triIndex = 6 * (i * (resolution - 1) + j);
                     triangleIndices[triIndex++] = vertIndex;
                     triangleIndices[triIndex++] = vertIndex + resolution + 1;
                     triangleIndices[triIndex++] = vertIndex + resolution;
                     triangleIndices[triIndex++] = vertIndex;
                     triangleIndices[triIndex++] = vertIndex + 1;
-                    triangleIndices[triIndex++] = vertIndex + resolution + 1;
+                    triangleIndices[triIndex] = vertIndex + resolution + 1;
                 }
             }
         }
