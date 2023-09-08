@@ -1,0 +1,56 @@
+#version 460 core
+#define PI 3.1415926535897932384626433832795028841971
+#define TAU 6.283185307179586476925286766559
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// https://stackoverflow.com/q/52328129
+// https://stackoverflow.com/a/38172697 
+struct Element {
+    float posX;         // 4
+    float posY;         // 8
+    float posZ;         // 12
+    float texCoordU;    // 16
+    float texCoordV;    // 20
+};
+layout(std430, binding = 0) buffer vertexBlock { Element vertices[]; };
+layout(std430, binding = 1) buffer triangleIndexBlock { uint triangleIndices[]; };
+uniform uint resolution;
+uniform vec3 normal;
+
+// http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
+vec3 mapCubePointToSphere(vec3 p)
+{
+    vec3 p2 = p * p;
+    return p*sqrt(1.0-(p2.yxx+p2.zzy)/2.0+p2.yxx*p2.zzy/3.0);
+}
+
+// https://gamedev.stackexchange.com/a/114416
+vec2 mapUnitSpherePointToUV(vec3 p)
+{
+    return vec2(atan(-p.x,-p.z)/TAU+0.5,-p.y*0.5+0.5);
+}
+
+
+void main() {
+    vec3 tangent = normal.yzx;
+    vec3 bitangent = cross(normal, tangent);
+    vec2 t = gl_GlobalInvocationID.xy / vec2(resolution - 1);
+    vec3 cubePoint = normal + tangent * 2.0 * (t.x - 0.5f) + bitangent * 2.0 * (t.y - 0.5f);
+    vec3 spherePoint = mapCubePointToSphere(cubePoint);
+    vec2 uv = mapUnitSpherePointToUV(spherePoint);
+    uint vertIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * resolution;
+    vertices[vertIndex].posX = spherePoint.x;
+    vertices[vertIndex].posY = spherePoint.y;
+    vertices[vertIndex].posZ = spherePoint.z;
+    vertices[vertIndex].texCoordU = uv.x;//clamp(uv.x, 0.0, 1.0);
+    vertices[vertIndex].texCoordV = uv.y;//clamp(uv.y, 0.0, 1.0);
+    if (gl_GlobalInvocationID.x < resolution - 1 && gl_GlobalInvocationID.y < resolution - 1) {
+        uint triIndex = 6 * (gl_GlobalInvocationID.x * (resolution - 1) + gl_GlobalInvocationID.y);
+        triangleIndices[triIndex] = vertIndex;
+        triangleIndices[triIndex + 1] = vertIndex + resolution + 1;
+        triangleIndices[triIndex + 2] = vertIndex + resolution;
+        triangleIndices[triIndex + 3] = vertIndex;
+        triangleIndices[triIndex + 4] = vertIndex + 1;
+        triangleIndices[triIndex + 5] = vertIndex + resolution + 1;
+    }
+}

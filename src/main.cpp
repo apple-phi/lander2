@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
     // Our ModelViewProjection : multiplication of our 3 matrices
     glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-    const auto &meshes = Graphics::generateFaces(20);
-    for (const auto &m : meshes)
+    const auto &shaderMeshes = Graphics::shaderGenerateFaces(200);
+    for (const auto &m : shaderMeshes)
     {
         m.setVertPosLocation(0);
         m.setTexCoordLocation(1);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         prog2.use();
         prog2.setUniformMat4("MVP", &MVP[0][0]);
         colorMap.bind(0);
-        for (const auto &m : meshes)
+        for (const auto &m : shaderMeshes)
         {
             m.draw();
         }
