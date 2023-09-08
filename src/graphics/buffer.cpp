@@ -8,6 +8,7 @@ namespace Graphics
         gl::glCreateVertexArrays(1, &id);
         // bind();
     }
+    VAO::VAO(gl::GLuint id) : id(id) {}
     VAO::~VAO()
     {
         // gl::glDeleteVertexArrays(1, &id);
@@ -52,6 +53,7 @@ namespace Graphics
     {
         gl::glCreateBuffers(1, &id);
     }
+    Buffer::Buffer(gl::GLuint id) : id(id) {}
     Buffer::~Buffer()
     {
         // gl::glDeleteBuffers(1, &id);
@@ -59,6 +61,16 @@ namespace Graphics
     void Buffer::addData(gl::GLsizeiptr size, const void *data, gl::GLenum usage) const
     {
         gl::glNamedBufferData(id, size, data, usage);
+    }
+    gl::GLint Buffer::getParameter(gl::GLenum pname) const
+    {
+        gl::GLint params;
+        gl::glGetNamedBufferParameteriv(id, pname, &params);
+        return params;
+    }
+    gl::GLsizeiptr Buffer::getSize() const
+    {
+        return getParameter(gl::GL_BUFFER_SIZE);
     }
     // void Buffer::bind() const
     // {
