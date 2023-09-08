@@ -1,4 +1,5 @@
 #pragma once
+#include <any>
 #include <glbinding/gl/gl.h>
 
 namespace Graphics
@@ -7,6 +8,7 @@ namespace Graphics
     {
         gl::GLuint id;
         VAO();
+        VAO(gl::GLuint id);
         ~VAO();
         void bind() const;
         void unbind() const;
@@ -26,8 +28,18 @@ namespace Graphics
     {
         gl::GLuint id;
         Buffer();
+        Buffer(gl::GLuint id);
         ~Buffer();
         void addData(gl::GLsizeiptr size, const void *data, gl::GLenum usage) const;
+        gl::GLint getParameter(gl::GLenum pname) const;
+        gl::GLsizeiptr getSize() const;
+        template <typename T>
+        T getSubData(gl::GLintptr offset, gl::GLsizeiptr size) const
+        {
+            T data;
+            gl::glGetNamedBufferSubData(id, offset, size, &data);
+            return data;
+        };
         // void bind() const;
         // void unbind() const;
     };
