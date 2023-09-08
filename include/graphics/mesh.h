@@ -29,6 +29,7 @@ namespace Graphics
         unsigned int numTriangles;
         VAO vao;
         Buffer vbo, ebo;
+        TriangleMesh();
         TriangleMesh(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices);
         TriangleMesh(gl::GLuint vbo, gl::GLuint ebo);
         void setVertPosLocation(unsigned int location) const;

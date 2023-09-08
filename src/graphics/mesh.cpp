@@ -49,6 +49,7 @@ static_assert(sizeof(glm::vec3) == sizeof(float) * 3, "glm::vec3 is not the same
 static_assert(sizeof(Graphics::VertexData) == sizeof(float) * 5, "VertexData is not the same size as float[5]");
 namespace Graphics
 {
+    TriangleMesh::TriangleMesh() {}
     TriangleMesh::TriangleMesh(gl::GLuint vbo, gl::GLuint ebo)
         : vbo(vbo), ebo(ebo)
     {
@@ -102,16 +103,39 @@ namespace Graphics
 
     std::array<TriangleMesh, 6> shaderGenerateFaces(unsigned int resolution)
     {
-        return {
-            shaderMakeSpherifiedCubeFace(Direction::UP, resolution),
-            shaderMakeSpherifiedCubeFace(Direction::DOWN, resolution),
-            shaderMakeSpherifiedCubeFace(Direction::LEFT, resolution),
-            shaderMakeSpherifiedCubeFace(Direction::RIGHT, resolution),
-            shaderMakeSpherifiedCubeFace(Direction::FRONT, resolution),
-            shaderMakeSpherifiedCubeFace(Direction::BACK, resolution)};
+        if (resolution % 8 != 0)
+        {
+            throw std::runtime_error("resolution is not a multiple of 8");
+        }
+        std::array<TriangleMesh, 6> meshes;
+        const std::vector<glm::vec3> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT, Direction::FRONT, Direction::BACK};
+        Shader computeShader("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/shaders/sphereMeshFace.comp", gl::GL_COMPUTE_SHADER);
+        ShaderProgram prog({computeShader});
+        prog.setUniformUnsignedInt("resolution", resolution);
+        std::transform(directions.begin(), directions.end(), meshes.begin(), [&](const glm::vec3 &cubeFaceNormal)
+                       {prog.setUniformVec3("normal", cubeFaceNormal);
+                        Buffer vertices, triangleIndices;
+                        // https://stackoverflow.com/a/56470902
+                        vertices.addData(resolution * resolution * sizeof(VertexData), nullptr, gl::GL_DYNAMIC_DRAW);
+                        triangleIndices.addData((resolution - 1) * (resolution - 1) * 6 * sizeof(unsigned int), nullptr, gl::GL_DYNAMIC_DRAW);
+                        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, vertices.id);
+                        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "vertexBlock"), vertices.id);
+                        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, triangleIndices.id);
+                        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "triangleIndexBlock"), triangleIndices.id);
+                        prog.use();
+                        // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
+                        // https://stackoverflow.com/a/62601514
+                        gl::glDispatchCompute(resolution/8, resolution/8, 1);
+                        return std::move(TriangleMesh{vertices.id, triangleIndices.id}); });
+        gl::glMemoryBarrier(gl::GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | gl::GL_ELEMENT_ARRAY_BARRIER_BIT);
+        return meshes;
     }
     TriangleMesh shaderMakeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution)
     {
+        if (resolution % 8 != 0)
+        {
+            throw std::runtime_error("resolution is not a multiple of 8");
+        }
         Shader computeShader("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/shaders/sphereMeshFace.comp", gl::GL_COMPUTE_SHADER);
         ShaderProgram prog({computeShader});
         Buffer vertices, triangleIndices;
@@ -125,10 +149,9 @@ namespace Graphics
         prog.setUniformUnsignedInt("resolution", resolution);
         prog.setUniformVec3("normal", normal);
         prog.use();
-        gl::glDispatchCompute(resolution, resolution, 1);
+        gl::glDispatchCompute(resolution / 8, resolution / 8, 1);
         gl::glMemoryBarrier(gl::GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
         gl::glMemoryBarrier(gl::GL_ELEMENT_ARRAY_BARRIER_BIT);
-        gl::glMemoryBarrier(gl::GL_ALL_BARRIER_BITS);
         return std::move(TriangleMesh{vertices.id, triangleIndices.id});
     }
 

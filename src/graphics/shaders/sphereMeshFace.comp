@@ -1,7 +1,9 @@
 #version 460 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
-layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+// https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
+// https://stackoverflow.com/a/62601514
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 // https://stackoverflow.com/q/52328129
 // https://stackoverflow.com/a/38172697 
