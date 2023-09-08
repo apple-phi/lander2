@@ -12,7 +12,7 @@ namespace Graphics
         gl::GLenum type;
         Shader(const std::string &filepath, gl::GLenum type);
         ~Shader();
-        operator gl::GLuint() const;
+        gl::GLint getParameter(gl::GLenum pname) const;
     };
 
     struct ShaderProgram
@@ -20,9 +20,10 @@ namespace Graphics
         gl::GLuint id;
         explicit ShaderProgram(std::initializer_list<Shader> shaders);
         ~ShaderProgram();
-        operator gl::GLuint() const;
         void use() const;
+        gl::GLint getParameter(gl::GLenum pname) const;
         void setUniformBool(const std::string &name, bool value) const;
+        void setUniformUnsignedInt(const std::string &name, unsigned int value) const;
         void setUniformInt(const std::string &name, int value) const;
         void setUniformFloat(const std::string &name, float value) const;
         void setUniformMat3(const std::string &name, const gl::GLfloat *mat) const;
