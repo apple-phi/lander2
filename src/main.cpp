@@ -46,11 +46,11 @@ int main(int argc, char *argv[])
     Graphics::Shader fragmentShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.frag", GL_FRAGMENT_SHADER);
     Graphics::ShaderProgram prog2({vertexShader2, fragmentShader2});
 
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
     glm::mat4 View = glm::lookAt(
-        glm::vec3(3, 3, -3), // Camera is at (4,3,-3), in World Space
-        glm::vec3(0, 0, 0),  // and looks at the origin
-        glm::vec3(0, 1, 0)   // Head is up (set to 0,-1,0 to look upside-down)
+        glm::vec3(8e3),     // Camera pos in World Space
+        glm::vec3(0, 0, 0), // and looks at the origin
+        glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
     );
     glm::mat4 Model = glm::mat4(1.0);
     // Our ModelViewProjection : multiplication of our 3 matrices
@@ -64,6 +64,12 @@ int main(int argc, char *argv[])
     }
 
     auto colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_color.jpg", 10);
+    auto normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_normal.jpg", 10);
+    prog2.use();
+    colorMap.bind(0);
+    normalMap.bind(1);
+    prog2.setUniformTex("colorMap", 0);
+    prog2.setUniformTex("normalMap", 1);
 
     // Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
@@ -73,9 +79,7 @@ int main(int argc, char *argv[])
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        prog2.use();
         prog2.setUniformMat4("MVP", &MVP[0][0]);
-        colorMap.bind(0);
         for (const auto &m : shaderMeshes)
         {
             m.draw();
