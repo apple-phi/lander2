@@ -8,7 +8,7 @@ namespace Graphics
     {
         gl::GLuint id;
         VAO();
-        VAO(gl::GLuint id);
+        explicit VAO(gl::GLuint id);
         ~VAO();
         void bind() const;
         void unbind() const;
@@ -28,17 +28,17 @@ namespace Graphics
     {
         gl::GLuint id;
         Buffer();
-        Buffer(gl::GLuint id);
+        explicit Buffer(gl::GLuint id);
         ~Buffer();
         void addData(gl::GLsizeiptr size, const void *data, gl::GLenum usage) const;
         gl::GLint getParameter(gl::GLenum pname) const;
         gl::GLsizeiptr getSize() const;
         template <typename T>
-        T getSubData(gl::GLintptr offset, gl::GLsizeiptr size) const
+        T getSubData(gl::GLintptr offset) const
         {
             T data;
-            gl::glGetNamedBufferSubData(id, offset, size, &data);
-            return data;
+            gl::glGetNamedBufferSubData(id, offset, sizeof(T), &data);
+            return std::move(data);
         };
         // void bind() const;
         // void unbind() const;
