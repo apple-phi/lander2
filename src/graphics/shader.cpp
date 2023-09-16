@@ -114,4 +114,8 @@ namespace Graphics
     {
         gl::glProgramUniform4f(id, gl::glGetUniformLocation(id, name.c_str()), vec.x, vec.y, vec.z, vec.w);
     }
+    void ShaderProgram::setUniformTex(const std::string &name, gl::GLuint texUnitIndex) const
+    {
+        gl::glProgramUniform1i(id, gl::glGetUniformLocation(id, name.c_str()), texUnitIndex);
+    }
 }

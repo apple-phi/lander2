@@ -31,6 +31,7 @@ namespace Graphics
         void setUniformVec2(const std::string &name, glm::vec2 vec) const;
         void setUniformVec3(const std::string &name, glm::vec3 vec) const;
         void setUniformVec4(const std::string &name, glm::vec4 vec) const;
+        void setUniformTex(const std::string &name, gl::GLuint texUnitIndex) const;
     };
 
 }
