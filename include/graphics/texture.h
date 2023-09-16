@@ -4,6 +4,8 @@ namespace Graphics
     struct Tex2D
     {
         gl::GLuint id;
+        int width, height, nChannels;
+        gl::GLenum format, internalFormat;
 
         explicit Tex2D(const std::string &filepath, gl::GLuint nLevels);
         ~Tex2D();
