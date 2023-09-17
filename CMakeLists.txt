@@ -44,7 +44,7 @@ include_directories(${stb_SOURCE_DIR})
 add_subdirectory(src)
 
 # App
-file(GLOB_RECURSE SRC_SOURCES LIST_DIRECTORIES true ./src/**)
+file(GLOB_RECURSE SRC_SOURCES LIST_DIRECTORIES true src/**)
 message("App *.*pp: ${SRC_SOURCES}")
 add_executable(LanderApp ${SRC_SOURCES})
 include_directories(./include)

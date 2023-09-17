@@ -11,11 +11,10 @@
 #include "graphics/mesh.h"
 #include "graphics/helper.h"
 #include "graphics/texture.h"
+#include "graphics/event.h"
+#include "graphics/state.h"
 
 using namespace gl;
-
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -37,24 +36,23 @@ int main(int argc, char *argv[])
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, Graphics::Callback::framebufferSize);
+    glfwSetKeyCallback(window, Graphics::Callback::key);
+    glfwSetMouseButtonCallback(window, Graphics::Callback::mouseButton);
+    glfwSetCursorPosCallback(window, Graphics::Callback::cursorPos);
     glbinding::initialize(glfwGetProcAddress);
     glbinding::aux::enableGetErrorCallback();
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+
+    auto &state = Graphics::State::ref();
+    state.camera = Graphics::Camera(glm::vec3(8e3), glm::vec3(0, 0, 0));
 
     Graphics::Shader vertexShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.vert", GL_VERTEX_SHADER);
     Graphics::Shader fragmentShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.frag", GL_FRAGMENT_SHADER);
     Graphics::ShaderProgram prog2({vertexShader2, fragmentShader2});
 
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
-    glm::mat4 View = glm::lookAt(
-        glm::vec3(8e3),     // Camera pos in World Space
-        glm::vec3(0, 0, 0), // and looks at the origin
-        glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
-    );
     glm::mat4 Model = glm::mat4(1.0);
-    // Our ModelViewProjection : multiplication of our 3 matrices
-    glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
     const auto &shaderMeshes = Graphics::shaderGenerateFaces(24);
     for (const auto &m : shaderMeshes)
@@ -76,9 +74,9 @@ int main(int argc, char *argv[])
     glClearColor(0.06f, 0.01f, 0.3f, 1.0f);
     while (!glfwWindowShouldClose(window))
     {
-        processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glm::mat4 MVP = Projection * state.camera.view * Model; // Remember, matrix multiplication is the other way around
         prog2.setUniformMat4("MVP", &MVP[0][0]);
         for (const auto &m : shaderMeshes)
         {
@@ -90,15 +88,4 @@ int main(int argc, char *argv[])
     }
     glfwTerminate();
     return 0;
-}
-
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }

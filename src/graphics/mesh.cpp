@@ -9,17 +9,18 @@
 #include "graphics/shader.h"
 #include "graphics/buffer.h"
 #include "graphics/texture.h"
+#include "graphics/helper.h"
 
 using glm::vec3;
 
 namespace Direction
 {
-    const vec3 UP{0, 1, 0};
-    const vec3 DOWN{0, -1, 0};
-    const vec3 LEFT{-1, 0, 0};
-    const vec3 RIGHT{1, 0, 0};
-    const vec3 FRONT{0, 0, 1};
-    const vec3 BACK{0, 0, -1};
+    const glm::vec3 UP{0, 1, 0};
+    const glm::vec3 DOWN{0, -1, 0};
+    const glm::vec3 LEFT{-1, 0, 0};
+    const glm::vec3 RIGHT{1, 0, 0};
+    const glm::vec3 FRONT{0, 0, 1};
+    const glm::vec3 BACK{0, 0, -1};
 }
 
 // http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
