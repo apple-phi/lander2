@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     // Our ModelViewProjection : multiplication of our 3 matrices
     glm::mat4 MVP = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-    const auto &shaderMeshes = Graphics::shaderGenerateFaces(200);
+    const auto &shaderMeshes = Graphics::shaderGenerateFaces(24);
     for (const auto &m : shaderMeshes)
     {
         m.setVertPosLocation(0);
