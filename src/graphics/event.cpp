@@ -12,25 +12,24 @@
 // Project an x,y pair onto a sphere of radius r or a hyperbolic sheet if
 // we are away from the centre of the sphere
 // Use this to avoid gimbal lock in quaternion camera orientation
-glm::vec3 projectOnTrackball(float r, glm::vec2 screenPos)
+inline glm::vec3 projectOnTrackball(float r, glm::vec2 screenPos)
 {
     const float d = glm::length(screenPos);
-    const float t = r * r / 2.0;
+    const float t = r / std::numbers::sqrt2;
     if (d < t)
     { // inside sphere
         return glm::vec3(screenPos, std::sqrt(r * r - d * d));
     }
     // on hyperbola
-    return glm::vec3(screenPos, t);
+    return glm::vec3(screenPos, t * t / d);
 }
 
 namespace Graphics::Callback
 {
     bool _mouseDragging = false;
-    double _lastX = 0,
-           _lastY = 0,
-           _dragSensitivity = 0.01,
+    double _dragSensitivity = 0.01,
            trackballRadius = 0.8;
+    glm::vec3 lastTrackballProjection;
 
     void mouseButton(GLFWwindow *window, int button, int action, int mods)
     {
@@ -39,7 +38,9 @@ namespace Graphics::Callback
             if (action == GLFW_PRESS)
             {
                 _mouseDragging = true;
-                glfwGetCursorPos(window, &_lastX, &_lastY);
+                double x, y;
+                glfwGetCursorPos(window, &x, &y);
+                lastTrackballProjection = projectOnTrackball(trackballRadius, {2.0 * x / 800.0 - 1.0, 1.0 - 2.0 * y / 600.0});
             }
             else if (action == GLFW_RELEASE)
             {
@@ -53,19 +54,17 @@ namespace Graphics::Callback
         if (_mouseDragging)
         {
             auto &state = State::ref();
-            glm::vec3 oldProjection(projectOnTrackball(trackballRadius, {2.0 * _lastX / 800.0 - 1.0, 1.0 - 2.0 * _lastY / 600.0}));
             glm::vec3 newProjection(projectOnTrackball(trackballRadius, {2.0 * xPos / 800.0 - 1.0, 1.0 - 2.0 * yPos / 600.0}));
-            float angle = glm::acos(glm::dot(glm::normalize(newProjection), glm::normalize(oldProjection)));
+            float angle = glm::acos(glm::clamp(glm::dot(glm::normalize(newProjection), glm::normalize(lastTrackballProjection)), 0.0f, 1.0f));
             const glm::mat4 invView = glm::inverse(state.camera.view);
-            oldProjection = invView * glm::vec4(oldProjection, 1.0);
-            newProjection = invView * glm::vec4(newProjection, 1.0);
-            const glm::vec3 axis = glm::normalize(glm::cross(newProjection, oldProjection));
+            glm::vec3 oldProjectionCameraSpace = invView * glm::vec4(lastTrackballProjection, 1.0);
+            glm::vec3 newProjectionCameraSpace = invView * glm::vec4(newProjection, 1.0);
+            const glm::vec3 axis = glm::normalize(glm::cross(newProjectionCameraSpace, oldProjectionCameraSpace));
             const glm::quat deltaOrientation = glm::angleAxis(angle, axis);
             state.camera.pos = glm::rotate(deltaOrientation, state.camera.pos - state.camera.focus) + state.camera.focus;
             state.camera.up = glm::rotate(deltaOrientation, state.camera.up);
             state.camera.updateViewFromVectors();
-            _lastX = xPos;
-            _lastY = yPos;
+            lastTrackballProjection = newProjection;
         }
     }
 
