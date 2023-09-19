@@ -48,8 +48,8 @@ glm::vec2 mapUnitSpherePointToUV(const glm::vec3 &p)
 }
 
 static_assert(sizeof(glm::vec3) == sizeof(float) * 3, "glm::vec3 is not the same size as float[3]");
-static_assert(sizeof(Graphics::VertexData) == sizeof(float) * 5, "VertexData is not the same size as float[5]");
-namespace Graphics
+static_assert(sizeof(Graphics::Meshes::VertexData) == sizeof(float) * 5, "VertexData is not the same size as float[5]");
+namespace Graphics::Meshes
 {
     TriangleMesh::TriangleMesh() {}
     TriangleMesh::TriangleMesh(gl::GLuint vbo, gl::GLuint ebo)
@@ -139,71 +139,5 @@ namespace Graphics
                             gl::GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
                             gl::GL_TEXTURE_FETCH_BARRIER_BIT);
         return meshes;
-    }
-    TriangleMesh shaderMakeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution)
-    {
-        if (resolution % 8 != 0)
-        {
-            throw std::runtime_error("resolution is not a multiple of 8");
-        }
-        Shader computeShader("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/shaders/sphereMeshFace.comp", gl::GL_COMPUTE_SHADER);
-        ShaderProgram prog({computeShader});
-        Buffer vertices, triangleIndices;
-        /// https://stackoverflow.com/a/56470902
-        vertices.addData(resolution * resolution * sizeof(VertexData), nullptr, gl::GL_DYNAMIC_DRAW);
-        triangleIndices.addData((resolution - 1) * (resolution - 1) * 6 * sizeof(unsigned int), nullptr, gl::GL_DYNAMIC_DRAW);
-        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, vertices.id);
-        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "vertexBlock"), vertices.id);
-        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, triangleIndices.id);
-        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "triangleIndexBlock"), triangleIndices.id);
-        prog.setUniformUnsignedInt("resolution", resolution);
-        prog.setUniformVec3("normal", normal);
-        prog.use();
-        gl::glDispatchCompute(resolution / 8, resolution / 8, 1);
-        gl::glMemoryBarrier(gl::GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
-        gl::glMemoryBarrier(gl::GL_ELEMENT_ARRAY_BARRIER_BIT);
-        return std::move(TriangleMesh{vertices.id, triangleIndices.id});
-    }
-
-    // -----------------------------------------------------------------------------------
-
-    std::array<TriangleMesh, 6> generateFaces(unsigned int resolution)
-    {
-        return {
-            makeSpherifiedCubeFace(Direction::UP, resolution),
-            makeSpherifiedCubeFace(Direction::DOWN, resolution),
-            makeSpherifiedCubeFace(Direction::LEFT, resolution),
-            makeSpherifiedCubeFace(Direction::RIGHT, resolution),
-            makeSpherifiedCubeFace(Direction::FRONT, resolution),
-            makeSpherifiedCubeFace(Direction::BACK, resolution)};
-    };
-    TriangleMesh makeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution)
-    {
-        glm::vec3 tangent = {normal.y, normal.z, normal.x};
-        glm::vec3 bitangent = glm::cross(normal, tangent);
-        std::vector<VertexData> vertices(resolution * resolution);
-        std::vector<unsigned int> triangleIndices((resolution - 1) * (resolution - 1) * 6);
-        for (unsigned int i = 0; i < resolution; i++)
-        {
-            for (unsigned int j = 0; j < resolution; j++)
-            {
-                const size_t vertIndex = i + j * resolution;
-                const glm::vec2 t = glm::vec2(i, j) / (resolution - 1.0f);
-                const glm::vec3 p = normal + tangent * 2.0f * (t.x - 0.5f) + bitangent * 2.0f * (t.y - 0.5f);
-                const glm::vec3 spherePoint = mapCubePointToSphere(p);
-                vertices[vertIndex] = {.pos = spherePoint, .texCoord = mapUnitSpherePointToUV(spherePoint)};
-                if (i < resolution - 1 && j < resolution - 1)
-                {
-                    size_t triIndex = 6 * (i * (resolution - 1) + j);
-                    triangleIndices[triIndex++] = vertIndex;
-                    triangleIndices[triIndex++] = vertIndex + resolution + 1;
-                    triangleIndices[triIndex++] = vertIndex + resolution;
-                    triangleIndices[triIndex++] = vertIndex;
-                    triangleIndices[triIndex++] = vertIndex + 1;
-                    triangleIndices[triIndex] = vertIndex + resolution + 1;
-                }
-            }
-        }
-        return std::move(TriangleMesh{vertices, triangleIndices});
     }
 }

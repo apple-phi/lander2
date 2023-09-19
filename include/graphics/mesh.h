@@ -7,7 +7,7 @@
 #include "graphics/buffer.h"
 #include "graphics/helper.h"
 
-namespace Graphics
+namespace Graphics::Meshes
 {
     struct VertexData
     {
@@ -27,8 +27,5 @@ namespace Graphics
         void setTexCoordLocation(unsigned int location) const;
         void draw() const;
     };
-    std::array<TriangleMesh, 6> generateFaces(unsigned int resolution);
     std::array<TriangleMesh, 6> shaderGenerateFaces(unsigned int resolution);
-    TriangleMesh shaderMakeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution);
-    TriangleMesh makeSpherifiedCubeFace(const glm::vec3 &normal, unsigned int resolution);
 }
