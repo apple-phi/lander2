@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
     glm::mat4 Model = glm::mat4(1.0);
 
-    const auto &marsMesh = Graphics::Meshes::CubeSphere(8)
+    const auto &marsMesh = Graphics::Meshes::CubeSphere(8, 3e3)
                                .setVertPosLocation(0)
                                .setTexCoordLocation(1);
 

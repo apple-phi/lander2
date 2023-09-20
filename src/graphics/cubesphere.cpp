@@ -12,7 +12,7 @@ namespace Graphics::Meshes
 
     CubeSphere::CubeSphere(const std::array<CubeSphereFace, 6> &faces)
         : faces(faces) {}
-    CubeSphere::CubeSphere(unsigned int resolution)
+    CubeSphere::CubeSphere(unsigned int resolution, float radius) : resolution(resolution), radius(radius)
     {
         if (resolution % 8 != 0)
         {
@@ -22,6 +22,7 @@ namespace Graphics::Meshes
         const ShaderProgram prog({computeShader});
         prog.use();
         prog.setUniformUnsignedInt("resolution", resolution);
+        prog.setUniformFloat("radius", radius);
         const std::vector<glm::vec3> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT, Direction::FRONT, Direction::BACK};
         std::transform(directions.begin(), directions.end(), faces.begin(), [&](const glm::vec3 &cubeFaceNormal)
                        {prog.setUniformVec3("normal", cubeFaceNormal);
@@ -33,12 +34,9 @@ namespace Graphics::Meshes
                         gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "vertexBlock"), vertices.id);
                         gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, triangleIndices.id);
                         gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "triangleIndexBlock"), triangleIndices.id);
-
                         // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
                         // https://stackoverflow.com/a/62601514
                         gl::glDispatchCompute(resolution/8, resolution/8, 1);
-                        // gl::glMemoryBarrier(gl::GL_ALL_BARRIER_BITS);
-                        // std::cout << vertices.getSubData<VertexData>(0).texCoord.x << std::endl;
                         return std::move(CubeSphereFace(vertices.id, triangleIndices.id, cubeFaceNormal)); });
         gl::glMemoryBarrier(gl::GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT |
                             gl::GL_ELEMENT_ARRAY_BARRIER_BIT |

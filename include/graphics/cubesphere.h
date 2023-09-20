@@ -13,11 +13,16 @@ namespace Graphics::Meshes
         CubeSphereFace(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices, glm::vec3 normal);
         CubeSphereFace(gl::GLuint vbo, gl::GLuint ebo, glm::vec3 normal);
     };
+
+    // A mesh representing a sphere made of 6 cube faces
     struct CubeSphere
     {
         std::array<CubeSphereFace, 6> faces;
+        unsigned int resolution = 0;
+        float radius = 1.0f;
+        CubeSphere() = default;
         explicit CubeSphere(const std::array<CubeSphereFace, 6> &faces);
-        explicit CubeSphere(unsigned int resolution);
+        explicit CubeSphere(unsigned int resolution, float radius = 1.0f);
         void draw() const;
         const CubeSphere &setVertPosLocation(unsigned int location) const;
         const CubeSphere &setTexCoordLocation(unsigned int location) const;

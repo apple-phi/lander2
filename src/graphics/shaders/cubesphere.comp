@@ -19,6 +19,7 @@ layout(std430, binding = 1) writeonly buffer triangleIndexBlock { uint triangleI
 // layout (binding = 2, r32f) uniform readonly image2D topologyMap;
 uniform uint resolution;
 uniform vec3 normal;
+uniform float radius;
 
 
 // http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
@@ -49,7 +50,7 @@ void main() {
     vec3 spherePoint = mapCubePointToSphere(cubePoint);
     vec2 uv = mapUnitSpherePointToUV(spherePoint);
     uint vertIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * resolution;
-    spherePoint *= 3000;
+    spherePoint *= radius;
     // float relativeHeight = imageLoad(topologyMap, ivec2(uv*imageSize(topologyMap))).r;
     // vec3 planetPoint = spherePoint * (datum + heightExaggerationFactor*mix(lowestPointBelowDatum, highestPointAboveDatum, relativeHeight));
     vertices[vertIndex].posX = spherePoint.x;
