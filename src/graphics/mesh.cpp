@@ -13,7 +13,6 @@
 
 namespace Graphics::Meshes
 {
-    TriangleMesh::TriangleMesh() {}
     TriangleMesh::TriangleMesh(gl::GLuint vbo, gl::GLuint ebo)
         : vbo(vbo), ebo(ebo)
     {

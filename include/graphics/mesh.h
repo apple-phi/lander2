@@ -19,10 +19,10 @@ namespace Graphics::Meshes
 
     struct TriangleMesh
     {
-        unsigned int numTriangles;
+        unsigned int numTriangles = 0;
         VAO vao;
         Buffer vbo, ebo;
-        TriangleMesh();
+        TriangleMesh() = default;
         TriangleMesh(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices);
         TriangleMesh(gl::GLuint vbo, gl::GLuint ebo);
         const TriangleMesh &setVertPosLocation(unsigned int location) const;

@@ -5,7 +5,6 @@
 
 namespace Graphics::Meshes
 {
-    CubeSphereFace::CubeSphereFace() {}
     CubeSphereFace::CubeSphereFace(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices, glm::vec3 normal)
         : TriangleMesh(vertices, trianglesIndices), normal(normal) {}
     CubeSphereFace::CubeSphereFace(gl::GLuint vbo, gl::GLuint ebo, glm::vec3 normal)

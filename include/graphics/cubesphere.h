@@ -9,7 +9,7 @@ namespace Graphics::Meshes
     struct CubeSphereFace : public TriangleMesh
     {
         glm::vec3 normal;
-        CubeSphereFace();
+        CubeSphereFace() = default;
         CubeSphereFace(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices, glm::vec3 normal);
         CubeSphereFace(gl::GLuint vbo, gl::GLuint ebo, glm::vec3 normal);
     };
