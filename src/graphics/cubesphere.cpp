@@ -53,7 +53,7 @@ namespace Graphics::Meshes
             face.draw();
         }
     }
-    CubeSphere CubeSphere::setVertPosLocation(unsigned int location) const
+    const CubeSphere &CubeSphere::setVertPosLocation(unsigned int location) const
     {
         for (auto &face : faces)
         {
@@ -61,7 +61,7 @@ namespace Graphics::Meshes
         }
         return *this;
     }
-    CubeSphere CubeSphere::setTexCoordLocation(unsigned int location) const
+    const CubeSphere &CubeSphere::setTexCoordLocation(unsigned int location) const
     {
         for (auto &face : faces)
         {

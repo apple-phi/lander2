@@ -19,7 +19,7 @@ namespace Graphics::Meshes
         explicit CubeSphere(const std::array<CubeSphereFace, 6> &faces);
         explicit CubeSphere(unsigned int resolution);
         void draw() const;
-        CubeSphere setVertPosLocation(unsigned int location) const;
-        CubeSphere setTexCoordLocation(unsigned int location) const;
+        const CubeSphere &setVertPosLocation(unsigned int location) const;
+        const CubeSphere &setTexCoordLocation(unsigned int location) const;
     };
 }

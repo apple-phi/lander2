@@ -49,13 +49,15 @@ namespace Graphics::Meshes
             .attachVBO(0, vbo.id, 0, sizeof(VertexData))
             .attachEBO(ebo.id);
     }
-    void TriangleMesh::setVertPosLocation(unsigned int location) const
+    const TriangleMesh &TriangleMesh::setVertPosLocation(unsigned int location) const
     {
         vao.addVertAttr(location, 0, 3, gl::GL_FLOAT, gl::GL_FALSE, offsetof(VertexData, pos));
+        return *this;
     }
-    void TriangleMesh::setTexCoordLocation(unsigned int location) const
+    const TriangleMesh &TriangleMesh::setTexCoordLocation(unsigned int location) const
     {
         vao.addVertAttr(location, 0, 2, gl::GL_FLOAT, gl::GL_FALSE, offsetof(VertexData, texCoord));
+        return *this;
     }
     void TriangleMesh::draw() const
     {

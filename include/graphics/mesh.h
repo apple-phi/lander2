@@ -25,8 +25,8 @@ namespace Graphics::Meshes
         TriangleMesh();
         TriangleMesh(const std::vector<VertexData> &vertices, const std::vector<unsigned int> &trianglesIndices);
         TriangleMesh(gl::GLuint vbo, gl::GLuint ebo);
-        void setVertPosLocation(unsigned int location) const;
-        void setTexCoordLocation(unsigned int location) const;
+        const TriangleMesh &setVertPosLocation(unsigned int location) const;
+        const TriangleMesh &setTexCoordLocation(unsigned int location) const;
         void draw() const;
     };
     std::array<TriangleMesh, 6> shaderGenerateFaces(unsigned int resolution);
