@@ -13,6 +13,7 @@
 #include "graphics/texture.h"
 #include "graphics/event.h"
 #include "graphics/state.h"
+#include "graphics/cubesphere.h"
 
 using namespace gl;
 
@@ -54,12 +55,9 @@ int main(int argc, char *argv[])
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
     glm::mat4 Model = glm::mat4(1.0);
 
-    const auto &shaderMeshes = Graphics::Meshes::shaderGenerateFaces(24);
-    for (const auto &m : shaderMeshes)
-    {
-        m.setVertPosLocation(0);
-        m.setTexCoordLocation(1);
-    }
+    const auto &marsMesh = Graphics::Meshes::CubeSphere(8)
+                               .setVertPosLocation(0)
+                               .setTexCoordLocation(1);
 
     auto colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_color.jpg", 10);
     auto normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_normal.jpg", 10);
@@ -78,10 +76,8 @@ int main(int argc, char *argv[])
 
         glm::mat4 MVP = Projection * state.camera.view * Model; // Remember, matrix multiplication is the other way around
         prog2.setUniformMat4("MVP", &MVP[0][0]);
-        for (const auto &m : shaderMeshes)
-        {
-            m.draw();
-        }
+
+        marsMesh.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -16,7 +16,7 @@ struct Element {
 };
 layout(std430, binding = 0) writeonly buffer vertexBlock { Element vertices[]; };
 layout(std430, binding = 1) writeonly buffer triangleIndexBlock { uint triangleIndices[]; };
-layout (binding = 2, r32f) uniform readonly image2D topologyMap;
+// layout (binding = 2, r32f) uniform readonly image2D topologyMap;
 uniform uint resolution;
 uniform vec3 normal;
 
@@ -37,10 +37,10 @@ vec2 mapUnitSpherePointToUV(vec3 p)
 
 void main() {
     // TODO: make these uniforms for flexibility
-    float datum = 3389.5; // km, Mars 
-    float highestPointAboveDatum = 21.9; // km +ve , Olympus Mons
-    float lowestPointBelowDatum = 7.152; // km -ve , Hellas Planitia
-    float heightExaggerationFactor = 1;
+    // float datum = 3389.5; // km, Mars 
+    // float highestPointAboveDatum = 21.9; // km +ve , Olympus Mons
+    // float lowestPointBelowDatum = 7.152; // km -ve , Hellas Planitia
+    // float heightExaggerationFactor = 1;
 
     vec3 tangent = normal.yzx;
     vec3 bitangent = cross(normal, tangent);
@@ -49,11 +49,12 @@ void main() {
     vec3 spherePoint = mapCubePointToSphere(cubePoint);
     vec2 uv = mapUnitSpherePointToUV(spherePoint);
     uint vertIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * resolution;
-    float relativeHeight = imageLoad(topologyMap, ivec2(uv*imageSize(topologyMap))).r;
-    vec3 planetPoint = spherePoint * (datum + heightExaggerationFactor*mix(lowestPointBelowDatum, highestPointAboveDatum, relativeHeight));
-    vertices[vertIndex].posX = planetPoint.x;
-    vertices[vertIndex].posY = planetPoint.y;
-    vertices[vertIndex].posZ = planetPoint.z;
+    spherePoint *= 3000;
+    // float relativeHeight = imageLoad(topologyMap, ivec2(uv*imageSize(topologyMap))).r;
+    // vec3 planetPoint = spherePoint * (datum + heightExaggerationFactor*mix(lowestPointBelowDatum, highestPointAboveDatum, relativeHeight));
+    vertices[vertIndex].posX = spherePoint.x;
+    vertices[vertIndex].posY = spherePoint.y;
+    vertices[vertIndex].posZ = spherePoint.z;
     vertices[vertIndex].texCoordU = uv.x;
     vertices[vertIndex].texCoordV = uv.y;
     if (gl_GlobalInvocationID.x < resolution - 1 && gl_GlobalInvocationID.y < resolution - 1) {

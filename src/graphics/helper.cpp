@@ -1,5 +1,6 @@
 #include <glbinding/gl/gl.h>
 #include <glm/vec3.hpp>
+#include "graphics/helper.h"
 namespace Graphics::Helper
 {
     void useWireframe(bool use)

@@ -14,6 +14,8 @@ namespace Graphics::Meshes
         glm::vec3 pos;
         glm::vec2 texCoord;
     };
+    static_assert(sizeof(glm::vec3) == sizeof(float) * 3, "glm::vec3 is not the same size as float[3]");
+    static_assert(sizeof(VertexData) == sizeof(float) * 5, "VertexData is not the same size as float[5]");
 
     struct TriangleMesh
     {

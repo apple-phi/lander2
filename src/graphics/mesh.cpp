@@ -11,44 +11,6 @@
 #include "graphics/texture.h"
 #include "graphics/helper.h"
 
-using glm::vec3;
-
-namespace Direction
-{
-    const glm::vec3 UP{0, 1, 0};
-    const glm::vec3 DOWN{0, -1, 0};
-    const glm::vec3 LEFT{-1, 0, 0};
-    const glm::vec3 RIGHT{1, 0, 0};
-    const glm::vec3 FRONT{0, 0, 1};
-    const glm::vec3 BACK{0, 0, -1};
-}
-
-// http://mathproofs.blogspot.com/2005/07/mapping-cube-to-sphere.html
-vec3 mapCubePointToSphere(const vec3 &p)
-{
-    const vec3 v = p * p * 0.5f;
-    return p * glm::sqrt(1.0f + vec3{
-                                    -v.y - v.z + p.y * p.y * p.z * p.z / 3.0f,
-                                    -v.z - v.x + p.z * p.z * p.x * p.x / 3.0f,
-                                    -v.x - v.y + p.x * p.x * p.y * p.y / 3.0f,
-                                });
-}
-
-// https://gamedev.stackexchange.com/a/114416
-glm::vec2 mapUnitSpherePointToUV(const glm::vec3 &p)
-{
-    // if (std::abs(glm::length(p) - 1.0) >= 1e-6)
-    // {
-    //     std::cout << "ERROR in mapUnitSpherePointToUV with p = (" << p.x << ", " << p.y << ", " << p.z << ")" << std::endl;
-    //     throw std::runtime_error("p is not a point on the unit sphere.");
-    // }
-    return glm::vec2{
-        glm::atan(-p.x, -p.z) / glm::two_pi<float>() + 0.5f,
-        -p.y * 0.5 + 0.5};
-}
-
-static_assert(sizeof(glm::vec3) == sizeof(float) * 3, "glm::vec3 is not the same size as float[3]");
-static_assert(sizeof(Graphics::Meshes::VertexData) == sizeof(float) * 5, "VertexData is not the same size as float[5]");
 namespace Graphics::Meshes
 {
     TriangleMesh::TriangleMesh() {}
@@ -101,43 +63,4 @@ namespace Graphics::Meshes
         gl::glDrawElements(gl::GL_TRIANGLES, numTriangles * 3, gl::GL_UNSIGNED_INT, 0);
     }
 
-    //------------------------------------------------------------------------------------
-
-    std::array<TriangleMesh, 6> shaderGenerateFaces(unsigned int resolution)
-    {
-        if (resolution % 8 != 0)
-        {
-            throw std::runtime_error("resolution is not a multiple of 8");
-        }
-        const Shader computeShader("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/shaders/sphereMeshFace.comp", gl::GL_COMPUTE_SHADER);
-        const ShaderProgram prog({computeShader});
-        const Tex2D topologyMap("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_topo.jpg", 1);
-        prog.use();
-        gl::glBindImageTexture(gl::glGetProgramResourceIndex(prog.id, gl::GL_UNIFORM, "topologyMap"), topologyMap.id, 0, gl::GL_FALSE, 0, gl::GL_READ_ONLY, gl::GL_R32F);
-        prog.setUniformUnsignedInt("resolution", resolution);
-        std::array<TriangleMesh, 6> meshes;
-        const std::vector<glm::vec3> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT, Direction::FRONT, Direction::BACK};
-        std::transform(directions.begin(), directions.end(), meshes.begin(), [&](const glm::vec3 &cubeFaceNormal)
-                       {prog.setUniformVec3("normal", cubeFaceNormal);
-                        Buffer vertices, triangleIndices;
-                        // https://stackoverflow.com/a/56470902
-                        vertices.addData(resolution * resolution * sizeof(VertexData), nullptr, gl::GL_DYNAMIC_DRAW);
-                        triangleIndices.addData((resolution - 1) * (resolution - 1) * 6 * sizeof(unsigned int), nullptr, gl::GL_DYNAMIC_DRAW);
-                        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, vertices.id);
-                        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "vertexBlock"), vertices.id);
-                        gl::glBindBuffer(gl::GL_SHADER_STORAGE_BUFFER, triangleIndices.id);
-                        gl::glBindBufferBase(gl::GL_SHADER_STORAGE_BUFFER, gl::glGetProgramResourceIndex(prog.id, gl::GL_SHADER_STORAGE_BLOCK, "triangleIndexBlock"), triangleIndices.id);
-
-                        // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
-                        // https://stackoverflow.com/a/62601514
-                        gl::glDispatchCompute(resolution/8, resolution/8, 1);
-                        // gl::glMemoryBarrier(gl::GL_ALL_BARRIER_BITS);
-                        // std::cout << vertices.getSubData<VertexData>(0).texCoord.x << std::endl;
-                        return std::move(TriangleMesh{vertices.id, triangleIndices.id}); });
-        gl::glMemoryBarrier(gl::GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT |
-                            gl::GL_ELEMENT_ARRAY_BARRIER_BIT |
-                            gl::GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
-                            gl::GL_TEXTURE_FETCH_BARRIER_BIT);
-        return meshes;
-    }
 }
