@@ -9,7 +9,7 @@
 #include "graphics/helper.h"
 #include "graphics/state.h"
 
-// Project an x,y pair onto a sphere of radius r or a hyperbolic sheet if
+// Project an x, y pair onto a sphere of radius r or a hyperbolic sheet if
 // we are away from the centre of the sphere
 // Use this to avoid gimbal lock in quaternion camera orientation
 inline glm::vec3 projectOnTrackball(float r, glm::vec2 screenPos)
@@ -54,13 +54,13 @@ namespace Graphics::Callback
         if (_mouseDragging)
         {
             auto &state = State::ref();
-            glm::vec3 newProjection(projectOnTrackball(trackballRadius, {2.0 * xPos / 800.0 - 1.0, 1.0 - 2.0 * yPos / 600.0}));
-            float angle = glm::acos(glm::clamp(glm::dot(glm::normalize(newProjection), glm::normalize(lastTrackballProjection)), 0.0f, 1.0f));
-            const glm::mat4 invView = glm::inverse(state.camera.view);
-            glm::vec3 oldProjectionCameraSpace = invView * glm::vec4(lastTrackballProjection, 1.0);
-            glm::vec3 newProjectionCameraSpace = invView * glm::vec4(newProjection, 1.0);
-            const glm::vec3 axis = glm::normalize(glm::cross(newProjectionCameraSpace, oldProjectionCameraSpace));
-            const glm::quat deltaOrientation = glm::angleAxis(angle, axis);
+            const glm::vec3 &newProjection(projectOnTrackball(trackballRadius, {2.0 * xPos / 800.0 - 1.0, 1.0 - 2.0 * yPos / 600.0}));
+            const float angle = glm::acos(glm::clamp(glm::dot(glm::normalize(newProjection), glm::normalize(lastTrackballProjection)), 0.0f, 1.0f));
+            const glm::mat4 &invView = glm::inverse(state.camera.view);
+            const glm::vec3 &oldProjectionCameraSpace = invView * glm::vec4(lastTrackballProjection, 1.0);
+            const glm::vec3 &newProjectionCameraSpace = invView * glm::vec4(newProjection, 1.0);
+            const glm::vec3 &axis = glm::normalize(glm::cross(newProjectionCameraSpace, oldProjectionCameraSpace));
+            const glm::quat &deltaOrientation = glm::angleAxis(angle, axis);
             state.camera.pos = glm::rotate(deltaOrientation, state.camera.pos - state.camera.focus) + state.camera.focus;
             state.camera.up = glm::rotate(deltaOrientation, state.camera.up);
             state.camera.updateViewFromVectors();
