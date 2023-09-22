@@ -18,6 +18,7 @@ namespace Graphics
     struct ShaderProgram
     {
         gl::GLuint id;
+        ShaderProgram() = default;
         explicit ShaderProgram(std::initializer_list<Shader> shaders);
         ~ShaderProgram();
         void use() const;

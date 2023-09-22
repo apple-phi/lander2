@@ -14,6 +14,7 @@
 #include "graphics/event.h"
 #include "graphics/state.h"
 #include "graphics/cubesphere.h"
+#include "graphics/model.h"
 
 using namespace gl;
 
@@ -48,24 +49,8 @@ int main(int argc, char *argv[])
     auto &state = Graphics::State::ref();
     state.camera = Graphics::Camera(glm::vec3(8e3), glm::vec3(0, 0, 0));
 
-    Graphics::Shader vertexShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.vert", GL_VERTEX_SHADER);
-    Graphics::Shader fragmentShader2("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\planet.frag", GL_FRAGMENT_SHADER);
-    Graphics::ShaderProgram prog2({vertexShader2, fragmentShader2});
-
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
-    glm::mat4 Model = glm::mat4(1.0);
-
-    const auto &marsMesh = Graphics::Meshes::CubeSphere(8, 3e3)
-                               .setVertPosLocation(0)
-                               .setTexCoordLocation(1);
-
-    auto colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_color.jpg", 10);
-    auto normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_1k_normal.jpg", 10);
-    prog2.use();
-    colorMap.bind(0);
-    normalMap.bind(1);
-    prog2.setUniformTex("colorMap", 0);
-    prog2.setUniformTex("normalMap", 1);
+    auto mars = Graphics::Mars();
 
     // Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
@@ -74,10 +59,8 @@ int main(int argc, char *argv[])
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 MVP = Projection * state.camera.view * Model; // Remember, matrix multiplication is the other way around
-        prog2.setUniformMat4("MVP", &MVP[0][0]);
-
-        marsMesh.draw();
+        glm::mat4 VP = Projection * state.camera.view;
+        mars.draw(VP);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
