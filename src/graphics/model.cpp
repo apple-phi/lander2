@@ -1,5 +1,6 @@
 #include "graphics/model.h"
 #include "graphics/cubesphere.h"
+#include "graphics/state.h"
 
 namespace Graphics
 {
@@ -37,6 +38,8 @@ namespace Graphics
     }
     glm::mat4 Model::getModelMatrix() const
     {
+        // TODO: implement rotation matrix
+        // NOTE: maybe implement caching
         return translationMatrix * glm::mat4_cast(orientation);
     }
 
@@ -54,18 +57,20 @@ namespace Graphics
         normalMap.bind(1);
         shaderProgram.setUniformTex("colorMap", 0);
         shaderProgram.setUniformTex("normalMap", 1);
-        const auto faces = Graphics::Meshes::CubeSphere(8, radius).faces;
+        const auto faces = Graphics::Meshes::CubeSphere(16, radius).faces;
         meshes = std::vector<Meshes::TriangleMesh>(faces.begin(), faces.end());
-        setVertPosLocation(0);
-        setTexCoordLocation(1);
+        this->setVertPosLocation(0);
+        this->setTexCoordLocation(1);
     }
     void Mars::draw(const glm::mat4 &ViewProj) const
     {
+        static const auto &camera = State::ref().camera;
         const glm::mat4 MVP = ViewProj * getModelMatrix();
         shaderProgram.use();
         shaderProgram.setUniformMat4("MVP", &MVP[0][0]);
         for (const auto &mesh : meshes)
         {
+            // TODO: only draw if in view frustum
             mesh.draw();
         }
     }

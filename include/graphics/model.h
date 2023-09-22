@@ -9,6 +9,7 @@
 
 namespace Graphics
 {
+    // NOTE: doesn't support scaling
     struct Model
     {
         std::vector<Meshes::TriangleMesh> meshes;
