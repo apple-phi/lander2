@@ -149,7 +149,9 @@ parameter):
 #ifndef ATMOSPHERE_MODEL_H_
 #define ATMOSPHERE_MODEL_H_
 
-#include <glad/glad.h>
+#include <glbinding/gl/gl.h>
+using namespace gl;
+
 #include <array>
 #include <functional>
 #include <string>
