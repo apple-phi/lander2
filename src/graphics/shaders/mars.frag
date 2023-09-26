@@ -23,7 +23,7 @@ void main(){
 	vec2 uv = mapUnitSpherePointToUV(normalize(v.pos));
 	vec3 color =  texture(colorMap, uv).rgb;
 	vec3 normal = normalize(texture(normalMap, uv).rgb * 2.0 - 1.0);
-	vec3 ambient = 0.3 * color;
+	vec3 ambient = 0.0 * color;
 	vec3 diffuse = color * max(dot(normal, v.tangentLightDir), 0.0);
-	fragColor = vec4(ambient + diffuse, 1.0);
+	fragColor = vec4(pow(ambient + diffuse, vec3(1.0/2.2)), 1.0);
 }

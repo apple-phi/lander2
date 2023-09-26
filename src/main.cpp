@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     glfwSetKeyCallback(window, Graphics::Callback::key);
     glfwSetMouseButtonCallback(window, Graphics::Callback::mouseButton);
     glfwSetCursorPosCallback(window, Graphics::Callback::cursorPos);
+    glfwSetScrollCallback(window, Graphics::Callback::scroll);
     glbinding::initialize(glfwGetProcAddress);
     glbinding::aux::enableGetErrorCallback();
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
@@ -51,16 +52,20 @@ int main(int argc, char *argv[])
 
     glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
     auto mars = Graphics::Mars();
+    auto atmosphere = Graphics::Atmosphere();
 
     // Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.06f, 0.01f, 0.3f, 1.0f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glClearColor(0.00f, 0.00f, 0.0f, 1.0f);
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 VP = Projection * state.camera.view;
         mars.draw(VP);
+        // atmosphere.draw(VP);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

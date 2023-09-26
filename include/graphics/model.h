@@ -37,4 +37,14 @@ namespace Graphics
         Mars();
         void draw(const glm::mat4 &ViewProj) const;
     };
+
+    struct Atmosphere : public Model
+    {
+        ShaderProgram shaderProgram;
+        float outerRadius = 4000;
+        float innerRadius = 3389.5; // Mars datum
+
+        Atmosphere();
+        void draw(const glm::mat4 &ViewProj) const;
+    };
 }

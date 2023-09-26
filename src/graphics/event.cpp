@@ -49,6 +49,13 @@ namespace Graphics::Callback
         }
     }
 
+    void scroll(GLFWwindow *window, double xOffset, double yOffset)
+    {
+        auto &state = State::ref();
+        state.camera.pos += (state.camera.focus - state.camera.pos) * (float)(yOffset * 0.5);
+        state.camera.updateViewFromVectors();
+    }
+
     void cursorPos(GLFWwindow *window, double xPos, double yPos)
     {
         if (_mouseDragging)
