@@ -98,8 +98,8 @@ namespace Graphics
         const Graphics::Shader vert("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\mars.vert", gl::GL_VERTEX_SHADER);
         const Graphics::Shader frag("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\mars.frag", gl::GL_FRAGMENT_SHADER);
         shaderProgram = Graphics::ShaderProgram({vert, frag});
-        colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_6k_color.jpg", 10);
-        normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_6k_normal.jpg", 10);
+        colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_4k_color.jpg", 10);
+        normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_4k_normal.jpg", 10);
         shaderProgram.use();
         colorMap.bind(0);
         normalMap.bind(1);
