@@ -1,7 +1,7 @@
 #include <iostream>
 #include <glBinding/gl/gl.h>
 #include <glbinding/glbinding.h>
-#include <glbinding-aux/debug.h>
+// #include <glbinding-aux/debug.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     glfwSetCursorPosCallback(window, Graphics::Callback::cursorPos);
     glfwSetScrollCallback(window, Graphics::Callback::scroll);
     glbinding::initialize(glfwGetProcAddress);
-    glbinding::aux::enableGetErrorCallback();
+    // glbinding::aux::enableGetErrorCallback();
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
     auto &gstate = Graphics::State::ref();

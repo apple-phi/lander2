@@ -52,5 +52,5 @@ message("App *.*pp: ${SRC_SOURCES}")
 add_executable(LanderApp ${SRC_SOURCES} src/graphics/atmosphere/model.cc src/graphics/helper.cpp)
 include_directories(./include ./src/graphics)
 target_include_directories(LanderApp PRIVATE ${glm_SOURCE_DIR})
-target_link_libraries(LanderApp PRIVATE glfw glm::glm glbinding::glbinding glbinding::glbinding-aux)
+target_link_libraries(LanderApp PRIVATE glfw glm::glm glbinding::glbinding) # glbinding::glbinding-aux
 # target_compile_definitions(LanderApp PRIVATE GLM_FORCE_MESSAGES)
