@@ -1,0 +1,35 @@
+#version 460 core
+#define PI 3.1415926535897932384626433832795028841971
+#define TAU 6.283185307179586476925286766559
+// https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
+// https://stackoverflow.com/a/62601514
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+// https://stackoverflow.com/q/52328129
+// https://stackoverflow.com/a/38172697 
+struct Element {
+    float posX;         // 4
+    float posY;         // 8
+    float posZ;         // 12
+    float texCoordU;    // 16
+    float texCoordV;    // 20
+};
+layout(std430, binding = 0) buffer vertexBlock { Element vertices[]; };
+layout (binding = 2, r32f) uniform readonly image2D topologyMap;
+uniform uint resolution;
+
+void main() {
+    // TODO: make these uniforms for flexibility
+    // float datum = 3389.5; // km, Mars 
+    float highestPointAboveDatum = 21.9; // km +ve , Olympus Mons
+    float lowestPointBelowDatum = 7.152; // km -ve , Hellas Planitia
+    // float heightExaggerationFactor = 1;
+
+    vec2 t = gl_GlobalInvocationID.xy / vec2(resolution - 1);
+    uint vertIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * resolution;
+    float relativeHeight = imageLoad(topologyMap, ivec2(uv*imageSize(topologyMap))).r;
+    float heightAboveDatum = mix(lowestPointBelowDatum, highestPointAboveDatum, relativeHeight);
+    vertices[vertIndex].posX = spherePoint.x + heightAboveDatum ;
+    vertices[vertIndex].posY = spherePoint.y + heightAboveDatum ;
+    vertices[vertIndex].posZ = spherePoint.z + heightAboveDatum ;
+}

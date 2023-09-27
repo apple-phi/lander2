@@ -22,13 +22,13 @@ namespace Graphics
             throw std::runtime_error(infoLog);
         }
     }
-    Shader::Shader(const std::string &filepath, gl::GLenum type) : type(type)
-    {
-        std::ifstream file(filepath);
-        std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        const char *sourcePtr = source.c_str();
-        Shader(sourcePtr, type);
-    }
+    // Shader::Shader(const std::string &filepath, gl::GLenum type) : type(type)
+    // {
+    //     std::ifstream file(filepath);
+    //     std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    //     const char *sourcePtr = source.c_str();
+    //     Shader(sourcePtr, type);
+    // }
     Shader::~Shader()
     {
         // gl::glDeleteShader(id);
