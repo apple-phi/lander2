@@ -6,6 +6,7 @@
 #include "graphics/mesh.h"
 #include "graphics/texture.h"
 #include "graphics/shader.h"
+#include "graphics/buffer.h"
 
 namespace Graphics
 {
@@ -21,6 +22,8 @@ namespace Graphics
         void draw() const;
         const Model &setVertPosLocation(unsigned int location) const;
         const Model &setTexCoordLocation(unsigned int location) const;
+        void setPos(const glm::vec3 &pos);
+        void getPos(glm::vec3 &pos) const;
         void translate(const glm::vec3 &translation);
         void rotate(const glm::quat &rotation);
         glm::mat4 getModelMatrix() const;
@@ -34,8 +37,11 @@ namespace Graphics
         float highestPointAboveDatum = 21.9; // km +ve , Olympus Mons
         float lowestPointBelowDatum = 7.152; // km -ve , Hellas Planitia
 
+        float angularVel = 1.059E-07;
+
         Mars();
         void draw(const glm::mat4 &ViewProj) const;
+        void rotateDuringTimeStep(double dt);
     };
 
     struct Atmosphere : public Model
@@ -45,6 +51,18 @@ namespace Graphics
         float innerRadius = 3389.5; // Mars datum
 
         Atmosphere();
+        void draw(const glm::mat4 &ViewProj) const;
+    };
+
+    struct Lander : public Model
+    {
+        ShaderProgram shaderProgram;
+        float size = 1.0f;
+        VAO vao;
+        std::vector<glm::vec3> vertices;
+        std::vector<unsigned int> triangleIndices;
+
+        Lander();
         void draw(const glm::mat4 &ViewProj) const;
     };
 }

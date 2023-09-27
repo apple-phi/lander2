@@ -1,7 +1,15 @@
 #pragma once
+#include <iostream>
 namespace Graphics::Helper
 {
     void useWireframe(bool use = true);
+    // void print(const glm::vec3 &v);
+    // void print(const auto &s);
+    void print(const auto &s)
+    {
+        std::cout << s << std::endl;
+    }
+    void vecPrint(const glm::vec3 &v);
 }
 
 namespace Direction

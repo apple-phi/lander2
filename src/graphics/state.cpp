@@ -1,4 +1,5 @@
 #include <glm/vec3.hpp>
+#include <GLFW/glfw3.h>
 #include "graphics/state.h"
 #include "graphics/helper.h"
 namespace Graphics

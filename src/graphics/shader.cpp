@@ -6,13 +6,10 @@
 
 namespace Graphics
 {
-    Shader::Shader(const std::string &filepath, gl::GLenum type) : type(type)
+    Shader::Shader(const char *shaderSource, gl::GLenum type)
     {
-        std::ifstream file(filepath);
-        std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        const char *sourcePtr = source.c_str();
         this->id = gl::glCreateShader(type);
-        gl::glShaderSource(id, 1, &sourcePtr, nullptr);
+        gl::glShaderSource(id, 1, &shaderSource, nullptr);
         gl::glCompileShader(id);
         if (!getParameter(gl::GL_COMPILE_STATUS))
         {
@@ -20,10 +17,17 @@ namespace Graphics
             char infoLog[logSize];
             gl::glGetShaderInfoLog(id, logSize, nullptr, &infoLog[0]);
             std::cout << "Shader compilation failed for "
-                      << filepath
+                      << shaderSource
                       << std::endl;
             throw std::runtime_error(infoLog);
         }
+    }
+    Shader::Shader(const std::string &filepath, gl::GLenum type) : type(type)
+    {
+        std::ifstream file(filepath);
+        std::string source((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        const char *sourcePtr = source.c_str();
+        Shader(sourcePtr, type);
     }
     Shader::~Shader()
     {

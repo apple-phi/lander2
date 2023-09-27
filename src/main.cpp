@@ -15,12 +15,13 @@
 #include "graphics/state.h"
 #include "graphics/cubesphere.h"
 #include "graphics/model.h"
+#include "physics/state.h"
 
 using namespace gl;
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 int main(int argc, char *argv[])
 {
@@ -47,12 +48,17 @@ int main(int argc, char *argv[])
     glbinding::aux::enableGetErrorCallback();
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
-    auto &state = Graphics::State::ref();
-    state.camera = Graphics::Camera(glm::vec3(8e3), glm::vec3(0, 0, 0));
+    auto &gstate = Graphics::State::ref();
+    auto &pstate = Physics::State::ref();
 
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 2e4f);
+    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 2e4f);
     auto mars = Graphics::Mars();
-    auto atmosphere = Graphics::Atmosphere();
+    gstate.camera = Graphics::Camera(glm::vec3(1.3e4, 0, 0), glm::vec3(0, 0, 0));
+    // auto atmosphere = Graphics::Atmosphere();
+    auto glander = Graphics::Lander();
+    glander.translate(glm::vec3(7e3, 0, 0));
+
+    pstate.lander = Physics::Lander({3399500, 0, 0}, {0, 0, 0});
 
     // Graphics::Helper::useWireframe();
     glEnable(GL_DEPTH_TEST);
@@ -63,12 +69,31 @@ int main(int argc, char *argv[])
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 VP = Projection * state.camera.view;
+        glm::mat4 VP = Projection * gstate.camera.view;
         mars.draw(VP);
+        glander.draw(VP);
         // atmosphere.draw(VP);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // if (pstate.lander.status == Physics::LanderStatus::LANDED)
+        //     continue;
+        // pstate.time += 0.1;
+        // pstate.lander.updateDynamics(0.1);
+        // // Graphics::Helper::vecPrint(pstate.lander.pos);
+        // if (std::isnan(glm::length(pstate.lander.pos)))
+        // {
+        //     std::cout << "NaN" << std::endl;
+        //     break;
+        // }
+        // Graphics::Helper::print(pstate.lander.altitude());
+        // Graphics::Helper::print(pstate.time);
+
+        const double t = glfwGetTime();
+        gstate.deltaTime = t - gstate.time;
+        gstate.time = t;
+        mars.rotateDuringTimeStep(gstate.speedFactor * gstate.deltaTime);
     }
     glfwTerminate();
     return 0;

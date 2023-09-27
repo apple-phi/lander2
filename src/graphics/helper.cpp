@@ -1,3 +1,4 @@
+#include <iostream>
 #include <glbinding/gl/gl.h>
 #include <glm/vec3.hpp>
 #include "graphics/helper.h"
@@ -8,6 +9,15 @@ namespace Graphics::Helper
         use ? gl::glPolygonMode(gl::GL_FRONT_AND_BACK, gl::GL_LINE)
             : gl::glPolygonMode(gl::GL_FRONT_AND_BACK, gl::GL_FILL);
     };
+
+    void vecPrint(const glm::vec3 &v)
+    {
+        std::cout << "(" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
+    }
+    // void print(const auto &s)
+    // {
+    //     std::cout << s << std::endl;
+    // }
 }
 
 namespace Direction

@@ -20,6 +20,9 @@ namespace Graphics
     struct State
     {
         Camera camera;
+        double time = 0.0f;
+        double deltaTime = 0.0f;
+        double speedFactor = 1e6f;
         static State &ref();
 
     private:

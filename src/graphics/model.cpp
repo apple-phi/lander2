@@ -1,6 +1,11 @@
+#include <array>
+#include <vector>
 #include "graphics/model.h"
 #include "graphics/cubesphere.h"
 #include "graphics/state.h"
+#include "graphics/mesh.h"
+#include "graphics/shader.h"
+#include "graphics/buffer.h"
 #include "atmosphere/model.h"
 
 // Values from "Reference Solar Spectral Irradiance: ASTM G-173", ETR column
@@ -80,6 +85,14 @@ namespace Graphics
     {
         translationMatrix[3] += glm::vec4(translation, 0.0f);
     }
+    void Model::getPos(glm::vec3 &pos) const
+    {
+        pos = glm::vec3(translationMatrix[3]);
+    }
+    void Model::setPos(const glm::vec3 &pos)
+    {
+        translationMatrix[3] = glm::vec4(pos, 1.0f);
+    }
     void Model::rotate(const glm::quat &rotation)
     {
         orientation = rotation * orientation;
@@ -95,11 +108,12 @@ namespace Graphics
 
     Mars::Mars()
     {
-        const Graphics::Shader vert("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\mars.vert", gl::GL_VERTEX_SHADER);
-        const Graphics::Shader frag("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\mars.frag", gl::GL_FRAGMENT_SHADER);
+#include "./shaders/shaders.inc"
+        const Graphics::Shader vert(mars_vert, gl::GL_VERTEX_SHADER);
+        const Graphics::Shader frag(mars_frag, gl::GL_FRAGMENT_SHADER);
         shaderProgram = Graphics::ShaderProgram({vert, frag});
-        colorMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_4k_color.jpg", 10);
-        normalMap = Graphics::Tex2D("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/assets/mars_4k_normal.jpg", 10);
+        colorMap = Graphics::Tex2D("./mars_4k_color.jpg", 10);
+        normalMap = Graphics::Tex2D("./mars_4k_normal.jpg", 10);
         shaderProgram.use();
         colorMap.bind(0);
         normalMap.bind(1);
@@ -113,9 +127,11 @@ namespace Graphics
     void Mars::draw(const glm::mat4 &ViewProj) const
     {
         static const auto &camera = State::ref().camera;
-        const glm::mat4 MVP = ViewProj * getModelMatrix();
+        const auto M = getModelMatrix();
+        const glm::mat4 MVP = ViewProj * M;
         shaderProgram.use();
         shaderProgram.setUniformMat4("MVP", &MVP[0][0]);
+        shaderProgram.setUniformMat4("M", &M[0][0]);
         gl::glEnable(gl::GL_CULL_FACE);
         for (const auto &mesh : meshes)
         {
@@ -123,13 +139,18 @@ namespace Graphics
             mesh.draw();
         }
     }
+    void Mars::rotateDuringTimeStep(double dt)
+    {
+        rotate(glm::angleAxis((float)(dt * angularVel), glm::vec3(0.0f, 1.0f, 0.0f)));
+    }
 
     // --------------------------------------------------------------------------------------
 
     Atmosphere::Atmosphere()
     {
-        const Graphics::Shader vert("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\atmosphere.vert", gl::GL_VERTEX_SHADER);
-        const Graphics::Shader frag("C:\\Users\\lucas\\OneDrive\\Desktop\\lander2\\src\\graphics\\shaders\\atmosphere.frag", gl::GL_FRAGMENT_SHADER);
+#include "./shaders/shaders.inc"
+        const Graphics::Shader vert(atmosphere_vert, gl::GL_VERTEX_SHADER);
+        const Graphics::Shader frag(atmosphere_frag, gl::GL_FRAGMENT_SHADER);
         shaderProgram = Graphics::ShaderProgram({vert, frag});
         const auto faces = Graphics::Meshes::CubeSphere(16, outerRadius).faces;
         meshes = std::vector<Meshes::TriangleMesh>(faces.begin(), faces.end());
@@ -152,5 +173,38 @@ namespace Graphics
             // TODO: frustum culling
             mesh.draw();
         }
+    }
+
+    // --------------------------------------------------------------------------------------
+
+    Lander::Lander()
+    {
+        vertices = {glm::vec3(0)};
+        triangleIndices = {0, 1, 2,
+                           0, 2, 3,
+                           0, 3, 4,
+                           0, 4, 1,
+                           1, 3, 2,
+                           1, 4, 3};
+        auto vbo = Graphics::Buffer();
+        // auto ebo = Graphics::Buffer();
+        vbo.addData(vertices.size() * sizeof(glm::vec3), vertices.data(), gl::GL_STATIC_DRAW);
+        // ebo.addData(triangleIndices.size() * sizeof(unsigned int), triangleIndices.data(), gl::GL_STATIC_DRAW);
+        vao = Graphics::VAO()
+                  .attachVBO(0, vbo.id, 0, sizeof(glm::vec3));
+        //   .attachEBO(ebo.id);
+#include "./shaders/shaders.inc"
+        const Graphics::Shader vert(lander_vert, gl::GL_VERTEX_SHADER);
+        const Graphics::Shader frag(lander_frag, gl::GL_FRAGMENT_SHADER);
+        shaderProgram = Graphics::ShaderProgram({vert, frag});
+    }
+    void Lander::draw(const glm::mat4 &ViewProj) const
+    {
+        static const auto &camera = State::ref().camera;
+        const glm::mat4 MVP = ViewProj * getModelMatrix();
+        shaderProgram.use();
+        shaderProgram.setUniformMat4("MVP", &MVP[0][0]);
+        vao.bind();
+        gl::glDrawArrays(gl::GL_POINTS, 0, 1);
     }
 }

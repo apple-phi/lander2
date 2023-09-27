@@ -18,7 +18,8 @@ namespace Graphics::Meshes
         {
             throw std::runtime_error("resolution is not a multiple of 8");
         }
-        const Shader computeShader("C:/Users/lucas/OneDrive/Desktop/lander2/src/graphics/shaders/cubesphere.comp", gl::GL_COMPUTE_SHADER);
+#include "./shaders/shaders.inc"
+        const Shader computeShader(cubesphere_comp, gl::GL_COMPUTE_SHADER);
         const ShaderProgram prog({computeShader});
         prog.use();
         prog.setUniformUnsignedInt("resolution", resolution);

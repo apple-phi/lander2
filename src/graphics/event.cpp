@@ -40,7 +40,7 @@ namespace Graphics::Callback
                 _mouseDragging = true;
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                lastTrackballProjection = projectOnTrackball(trackballRadius, {2.0 * x / 800.0 - 1.0, 1.0 - 2.0 * y / 600.0});
+                lastTrackballProjection = projectOnTrackball(trackballRadius, {2.0 * x / 1920.0 - 1.0, 1.0 - 2.0 * y / 1080.0});
             }
             else if (action == GLFW_RELEASE)
             {
@@ -61,7 +61,7 @@ namespace Graphics::Callback
         if (_mouseDragging)
         {
             auto &state = State::ref();
-            const glm::vec3 &newProjection(projectOnTrackball(trackballRadius, {2.0 * xPos / 800.0 - 1.0, 1.0 - 2.0 * yPos / 600.0}));
+            const glm::vec3 &newProjection(projectOnTrackball(trackballRadius, {2.0 * xPos / 1920.0 - 1.0, 1.0 - 2.0 * yPos / 1080.0}));
             const float angle = glm::acos(glm::clamp(glm::dot(glm::normalize(newProjection), glm::normalize(lastTrackballProjection)), 0.0f, 1.0f));
             const glm::mat4 &invView = glm::inverse(state.camera.view);
             const glm::vec3 &oldProjectionCameraSpace = invView * glm::vec4(lastTrackballProjection, 1.0);

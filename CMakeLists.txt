@@ -38,14 +38,18 @@ FetchContent_MakeAvailable(stb)
 message(STATUS "Found STB at: " ${stb_SOURCE_DIR})
 include_directories(${stb_SOURCE_DIR})
 
+# assets
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 
 # Subdirs
 add_subdirectory(src)
+add_subdirectory(src/graphics/assets)
 
 # App
 file(GLOB_RECURSE SRC_SOURCES LIST_DIRECTORIES true src/**)
 message("App *.*pp: ${SRC_SOURCES}")
-add_executable(LanderApp ${SRC_SOURCES} src/graphics/atmosphere/model.cc)
+add_executable(LanderApp ${SRC_SOURCES} src/graphics/atmosphere/model.cc src/graphics/helper.cpp)
 include_directories(./include ./src/graphics)
 target_include_directories(LanderApp PRIVATE ${glm_SOURCE_DIR})
 target_link_libraries(LanderApp PRIVATE glfw glm::glm glbinding::glbinding glbinding::glbinding-aux)

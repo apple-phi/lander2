@@ -10,6 +10,7 @@ namespace Graphics
     {
         gl::GLuint id;
         gl::GLenum type;
+        explicit Shader(const char *shaderSource, gl::GLenum type);
         Shader(const std::string &filepath, gl::GLenum type);
         ~Shader();
         gl::GLint getParameter(gl::GLenum pname) const;
