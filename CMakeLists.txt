@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.7 FATAL_ERROR)
 project(lander2 VERSION 0.1.0 LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 23)  
+set(CMAKE_CXX_STANDARD 20)  
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 cmake_policy(SET CMP0135 NEW) # Fix download issues for external libs
