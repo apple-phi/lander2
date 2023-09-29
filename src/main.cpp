@@ -1,5 +1,5 @@
 #include <iostream>
-#include <glBinding/gl/gl.h>
+#include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
 // #include <glbinding-aux/debug.h>
 #define GLFW_INCLUDE_NONE
