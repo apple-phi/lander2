@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR) # Required by GoogleTest
+cmake_minimum_required(VERSION 3.14.7 FATAL_ERROR)
 project(lander2 VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 23)  
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
