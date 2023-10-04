@@ -59,8 +59,15 @@ jobs:
           sudo apt-add-repository ppa:cginternals/ppa
           sudo apt-get update
           sudo apt-get install -y g++ cmake mesa-common-dev libglfw3 libglfw3-dev libglbinding-dev libglbinding-dbg
+
       - name: Configure and Build for Ubuntu
         run: |
-          cmake --version
-          cmake -B build/ -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build/ --config Debug --target all --
+            cmake -B build/ -DCMAKE_BUILD_TYPE=Release
+            cmake --build build/ --config Release --target all --
+            tar -czvf lander2-build.tar.gz build/
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+            name: lander2-build.tar.gz
+            path: lander2-build.tar.gz
