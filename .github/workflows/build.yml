@@ -53,12 +53,19 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Install dependencies
+        # run: |
+        #   sudo apt-add-repository ppa:cginternals/ppa
+        #   sudo apt-get update
+        #   sudo apt-get install -y g++ cmake mesa-common-dev libglfw3 libglfw3-dev libglbinding-dev libglbinding-dbg
         run: |
-          sudo apt-add-repository ppa:cginternals/ppa
+          nix-env -i glbinding
           sudo apt-get update
-          sudo apt-get install -y g++ cmake mesa-common-dev libglfw3 libglfw3-dev libglbinding-dev libglbinding-dbg
+          sudo apt-get install -y g++ cmake mesa-common-dev libglfw3 libglfw3-dev
 
       - name: Configure and Build for Ubuntu
         run: |
