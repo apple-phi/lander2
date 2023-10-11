@@ -25,7 +25,14 @@ const unsigned int SCR_HEIGHT = 1080;
 
 int main(int argc, char *argv[])
 {
-    glfwInit();
+    if (!glfwInit())
+    {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        const char *error[512];
+        glfwGetError(&error[0]);
+        std::cout << error << std::endl;
+        return -1;
+    }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -35,6 +42,9 @@ int main(int argc, char *argv[])
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
+        const char *error[512];
+        glfwGetError(&error[0]);
+        std::cout << error << std::endl;
         glfwTerminate();
         return -1;
     }

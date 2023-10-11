@@ -3,7 +3,7 @@ project(lander2 VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)  
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-cmake_policy(SET CMP0135 NEW) # Fix download issues for external libs
+# cmake_policy(SET CMP0135 NEW) # Fix download issues for external libs
 
 find_package(glbinding REQUIRED)
 find_package(glfw3 REQUIRED)
