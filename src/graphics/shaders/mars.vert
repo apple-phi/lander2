@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 #define TAU 6.283185307179586476925286766559
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;

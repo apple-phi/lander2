@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889

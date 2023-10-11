@@ -1,4 +1,4 @@
-const char atmosphere_frag[] = R"(#version 460 core
+const char atmosphere_frag[] = R"(#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 in V {
@@ -9,7 +9,7 @@ out vec4 fragColor;
 void main(){
 	fragColor = vec4(0.0, 1.0, 0.0, 0.3);
 })";
-const char atmosphere_vert[] = R"(#version 460 core
+const char atmosphere_vert[] = R"(#version 450 core
 #define TAU 6.283185307179586476925286766559
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
@@ -36,7 +36,7 @@ def processFile(file: pathlib.Path) -> str:
 with open(directory / "shaders.inc", "w") as f:
     f.write("".join(processFile(file) for file in directory.iterdir()))
 )";
-const char cubesphere_comp[] = R"(#version 460 core
+const char cubesphere_comp[] = R"(#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
@@ -106,7 +106,7 @@ void main() {
         triangleIndices[triIndex + 5] = vertIndex + resolution + 1;
     }
 })";
-const char lander_frag[] = R"(#version 460 core
+const char lander_frag[] = R"(#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 in V {
@@ -123,7 +123,7 @@ void main(){
 	// vec3 diffuse = color * max(dot(normal, lightDir), 0.0);
 	fragColor = vec4(0.0, 1.0, 1.0, 1.0);
 })";
-const char lander_vert[] = R"(#version 460 core
+const char lander_vert[] = R"(#version 450 core
 #define TAU 6.283185307179586476925286766559
 layout (location = 0) in vec3 aPos;
 uniform mat4 MVP;
@@ -137,7 +137,7 @@ void main()
    gl_PointSize = 10.0;
    v.pos = aPos;
 })";
-const char mars_frag[] = R"(#version 460 core
+const char mars_frag[] = R"(#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 in V {
@@ -166,7 +166,7 @@ void main(){
 	vec3 diffuse = color * max(dot(normal, v.tangentLightDir), 0.0);
 	fragColor = vec4(pow(ambient + diffuse, vec3(1.0/2.2)), 1.0);
 })";
-const char mars_vert[] = R"(#version 460 core
+const char mars_vert[] = R"(#version 450 core
 #define TAU 6.283185307179586476925286766559
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
@@ -192,7 +192,7 @@ void main()
    v.texCoord = aTexCoord;
    v.tangentLightDir = TBN * lightDir;
 })";
-const char marsTerrain_comp[] = R"(#version 460 core
+const char marsTerrain_comp[] = R"(#version 450 core
 #define PI 3.1415926535897932384626433832795028841971
 #define TAU 6.283185307179586476925286766559
 // https://forum.unity.com/threads/compute-shader-thread-dispatching.953000/#post-6211889
@@ -228,7 +228,7 @@ void main() {
     vertices[vertIndex].posZ = spherePoint.z + heightAboveDatum ;
 })";
 const char shaders_inc[] = R"()";
-const char test_frag[] = R"(#version 460 core
+const char test_frag[] = R"(#version 450 core
 
 out vec4 fragColor;
 
@@ -237,7 +237,7 @@ void main()
    fragColor = vec4(1.0f, 0.4f, 1.0f, 1.0f);
 }
 )";
-const char test_vert[] = R"(#version 460 core
+const char test_vert[] = R"(#version 450 core
 layout (location = 0) in vec3 v;
 
 void main()
