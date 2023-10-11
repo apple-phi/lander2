@@ -112,8 +112,8 @@ namespace Graphics
         const Graphics::Shader vert(mars_vert, gl::GL_VERTEX_SHADER);
         const Graphics::Shader frag(mars_frag, gl::GL_FRAGMENT_SHADER);
         shaderProgram = Graphics::ShaderProgram({vert, frag});
-        colorMap = Graphics::Tex2D("./mars_4k_color.jpg", 10);
-        normalMap = Graphics::Tex2D("./mars_4k_normal.jpg", 10);
+        colorMap = Graphics::Tex2D("./assets/mars_4k_color.jpg", 10);
+        normalMap = Graphics::Tex2D("./assets/mars_4k_normal.jpg", 10);
         shaderProgram.use();
         colorMap.bind(0);
         normalMap.bind(1);
